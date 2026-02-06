@@ -1,0 +1,85 @@
+openapi: 3.0.3
+info:
+  title: Employee API to know the staff and in which work department
+  description: |-
+    A simple Enterprise API to allows two operations
+    - get the employee's information
+    - create a new employee
+  version: 1.0- SNAPSHOT
+servers:
+  - url: https://testenvironment.org/api/v1
+  - url: https://prodenvironment.org/api/v1
+tags:
+  - name: employees
+    description: Make new employee
+
+paths:
+  /employee:
+    get:
+      tags:
+        - employees
+      summary: Get employee information
+      description: Get more details about the employee
+      operationId: getEmployee
+      responses:
+        204:
+          description: Success
+        404:
+          description: Employee not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeNotFoundError'
+  /employee/new:
+    post:
+      tags:
+        - employees
+      summary: New employee
+      description: Create a new employee
+      operationId: newEmployee
+      requestBody:
+        description: Employee name and service
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEmployeeRequest'
+        required: true
+      responses:
+        204:
+          description: Success
+        404:
+          description: Employee not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeNotFoundError'
+
+components:
+  schemas:
+    Employee:
+      type: object
+      properties:
+        name:
+          type: string
+        firstname:
+          type: string
+        service:
+          type: string
+        floor:
+          type: number
+    EmployeeNotFoundError:
+      type: object
+      properties:
+        message:
+          type: string
+    CreateEmployeeRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        firstname:
+          type: string
+        service:
+          type: string
+        floor:
+          type: number
