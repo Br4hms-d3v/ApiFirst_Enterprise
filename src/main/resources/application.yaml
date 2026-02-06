@@ -1,3 +1,9 @@
 spring:
   application:
     name: Api_First_Enterprise
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
