@@ -3,50 +3,129 @@ info:
   title: Employee API to know the staff and in which work department
   description: |-
     A simple Enterprise API to allows two operations
-    - get the employee's information
+    - get a list of employees
     - create a new employee
+    - get an information about the employee
+    - edit an employee
+    - delete an employee
   version: 1.0- SNAPSHOT
 servers:
   - url: https://testenvironment.org/api/v1
   - url: https://prodenvironment.org/api/v1
 tags:
   - name: employees
-    description: Make new employee
+    description: Employees
 
 paths:
-  /employee:
+  /employees:
     get:
       tags:
         - employees
-      summary: Get employee information
-      description: Get more details about the employee
-      operationId: getEmployee
+      summary: list of employees
+      description: Retrieve the list of all employees
+      operationId: getEmployees
       responses:
-        204:
-          description: Success
+        200:
+          description: List of employees
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmployeesResponse'
+
+  /employee/new:
+    post:
+      tags:
+        - employee
+      summary: New employee
+      description: Create a new employee
+      operationId: createEmployee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEmployeeRequest'
+      responses:
+        201:
+          description: Employee created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeResponse'
+  /employee/{id}:
+    get:
+      tags:
+        - employee
+      summary: Get employee by ID
+      description: Retrieve employee details by ID
+      operationId: getEmployeeById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Employee found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeResponse'
         404:
           description: Employee not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/EmployeeNotFoundError'
-  /employee/new:
-    post:
+    put:
       tags:
-        - employees
-      summary: New employee
-      description: Create a new employee
-      operationId: newEmployee
+        - employee
+      summary: Update employee
+      description: Update an existing employee
+      operationId: updateEmployee
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
       requestBody:
-        description: Employee name and service
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateEmployeeRequest'
-        required: true
+      responses:
+        200:
+          description: Employee updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeResponse'
+        404:
+          description: Employee not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeNotFoundError'
+    delete:
+      tags:
+        - employee
+      summary:
+      description: Delete employee
+      operationId: deleteEmployee
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
       responses:
         204:
-          description: Success
+          description: Employee deleted successfully
         404:
           description: Employee not found
           content:
@@ -56,7 +135,14 @@ paths:
 
 components:
   schemas:
-    Employee:
+    EmployeesResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        firstname:
+          type: string
+    EmployeeResponse:
       type: object
       properties:
         name:
