@@ -17,10 +17,10 @@ tags:
     description: Employees
 
 paths:
-  /employees:
+  /employee:
     get:
       tags:
-        - employees
+        - employee
       summary: list of employees
       description: Retrieve the list of all employees
       operationId: getEmployees
@@ -75,11 +75,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/EmployeeResponse'
         404:
-          description: Employee not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EmployeeNotFoundError'
+          $ref: '#/components/responses/404'
     put:
       tags:
         - employee
@@ -106,15 +102,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/EmployeeResponse'
         404:
-          description: Employee not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EmployeeNotFoundError'
+          $ref: '#/components/responses/404'
     delete:
       tags:
         - employee
-      summary:
+      summary: Delete employee
       description: Delete employee
       operationId: deleteEmployee
       parameters:
@@ -125,13 +117,9 @@ paths:
             type: integer
       responses:
         204:
-          description: Employee deleted successfully
+          $ref: '#/components/responses/204'
         404:
-          description: Employee not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EmployeeNotFoundError'
+          $ref: '#/components/responses/404'
 
 components:
   schemas:
@@ -152,7 +140,8 @@ components:
         service:
           type: string
         floor:
-          type: number
+          type: integer
+          format: int32
     EmployeeNotFoundError:
       type: object
       properties:
@@ -168,4 +157,28 @@ components:
         service:
           type: string
         floor:
-          type: number
+          type: integer
+          format: int32
+
+  responses:
+    204:
+      description: Object not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Success
+
+    404:
+      description: Object not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Not found
