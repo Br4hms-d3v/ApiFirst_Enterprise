@@ -25,3 +25,13 @@ jobs:
 
       - name: Build with Maven
         run: mvn clean verify
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: ${DB_NAME}
+          POSTGRES_USER: ${DB_USER}
+          POSTGRES_PASSWORD: ${DB_PASSWORD}
+        ports:
+          - 5432:5432
