@@ -112,6 +112,7 @@
                                 <useSpringBoot4>true</useSpringBoot4>
                                 <useJakartaEe>true</useJakartaEe>
                                 <openApiNullable>false</openApiNullable>
+                                <interfaceOnly>true</interfaceOnly>
                             </configOptions>
                         </configuration>
                     </execution>

@@ -13,8 +13,8 @@ servers:
   - url: https://testenvironment.org/api/v1
   - url: https://prodenvironment.org/api/v1
 tags:
-  - name: employees
-    description: Employees
+  - name: employee
+    description: Employee management
 
 paths:
   /employee:
@@ -33,6 +33,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/EmployeesResponse'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
 
   /employee/new:
     post:
@@ -42,6 +46,7 @@ paths:
       description: Create a new employee
       operationId: createEmployee
       requestBody:
+        description: name, firstname, service and floor
         required: true
         content:
           application/json:
@@ -54,6 +59,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EmployeeResponse'
+        404:
+          $ref: '#/components/responses/404'
+        405:
+          $ref: '#/components/responses/405'
+        500:
+          $ref: '#/components/responses/500'
+
   /employee/{id}:
     get:
       tags:
@@ -67,6 +79,7 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
       responses:
         200:
           description: Employee found
@@ -76,33 +89,9 @@ paths:
                 $ref: '#/components/schemas/EmployeeResponse'
         404:
           $ref: '#/components/responses/404'
-    put:
-      tags:
-        - employee
-      summary: Update employee
-      description: Update an existing employee
-      operationId: updateEmployee
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateEmployeeRequest'
-      responses:
-        200:
-          description: Employee updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EmployeeResponse'
-        404:
-          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+
     delete:
       tags:
         - employee
@@ -115,11 +104,48 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
       responses:
         204:
           $ref: '#/components/responses/204'
         404:
           $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+
+  /employee/edit/{id}:
+    put:
+      tags:
+        - employee
+      summary: Update employee
+      description: Update an existing employee
+      operationId: updateEmployee
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEmployeeRequest'
+      responses:
+        200:
+          description: Employee updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeResponse'
+        404:
+          $ref: '#/components/responses/404'
+        405:
+          $ref: '#/components/responses/405'
+        500:
+          $ref: '#/components/responses/500'
 
 components:
   schemas:
@@ -130,6 +156,7 @@ components:
           type: string
         firstname:
           type: string
+
     EmployeeResponse:
       type: object
       properties:
@@ -142,12 +169,10 @@ components:
         floor:
           type: integer
           format: int32
-    EmployeeNotFoundError:
-      type: object
-      properties:
-        message:
-          type: string
-    CreateEmployeeRequest:
+        address:
+          $ref: '#/components/schemas/Address'
+
+    EmployeeWithoutAddressResponse:
       type: object
       properties:
         name:
@@ -160,25 +185,69 @@ components:
           type: integer
           format: int32
 
+    CreateEmployeeRequest:
+      type: object
+      required:
+        - name
+        - firstname
+      properties:
+        name:
+          type: string
+        firstname:
+          type: string
+        service:
+          type: string
+        floor:
+          type: integer
+          format: int32
+        address:
+          $ref: '#/components/schemas/Address'
+
+    UpdateEmployeeRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        firstname:
+          type: string
+        service:
+          type: string
+        floor:
+          type: integer
+          format: int32
+
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+        zipcode:
+          type: integer
+          format: int32
+        city:
+          type: string
+
   responses:
     204:
-      description: Object not found
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: Success
+      description: Employee deleted successfully
 
     404:
       description: Object not found
       content:
-        application/json:
+        application/problem+json:
           schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: Not found
+            $ref: '../resources/problem.yaml#/components/schemas/Problem'
+
+    405:
+      description: Invalid input
+      content:
+        application/problem+json:
+          schema:
+            $ref: '../resources/problem.yaml#/components/schemas/Problem'
+
+    500:
+      description: Error Server
+      content:
+        application/problem+json:
+          schema:
+            $ref: '../resources/problem.yaml#/components/schemas/Problem'

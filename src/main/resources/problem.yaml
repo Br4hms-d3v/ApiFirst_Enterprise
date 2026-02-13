@@ -1,0 +1,13 @@
+openapi: 3.0.3
+
+info:
+  title: Problem type
+  version: ${project.version}
+
+paths:
+  {}
+
+components:
+  schemas:
+    Problem:
+      description: 'A problem detail object RFC9457'
