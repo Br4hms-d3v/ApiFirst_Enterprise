@@ -1,9 +1,6 @@
 package be.community.Api_First_Enterprise.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Employee {
@@ -14,7 +11,11 @@ public class Employee {
 
     private String name;
     private String firstname;
+    private String service;
     private Integer floor;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private Address address;
 
     public Long getId() {
         return id;
@@ -40,11 +41,27 @@ public class Employee {
         this.firstname = firstname;
     }
 
+    public String getService() {
+        return service;
+    }
+
+    public void setService(String service) {
+        this.service = service;
+    }
+
     public Integer getFloor() {
         return floor;
     }
 
     public void setFloor(Integer floor) {
         this.floor = floor;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 }
