@@ -1,20 +1,21 @@
-package be.community.Api_First_Enterprise.entities;
+package be.community.Api_First_Enterprise.entity;
+
 
 import jakarta.persistence.*;
 
 @Entity
 public class Employee {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    //    @Column(nullable = false)
     private String name;
     private String firstname;
     private String service;
     private Integer floor;
 
     @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id", unique = true)
     private Address address;
 
     public Long getId() {

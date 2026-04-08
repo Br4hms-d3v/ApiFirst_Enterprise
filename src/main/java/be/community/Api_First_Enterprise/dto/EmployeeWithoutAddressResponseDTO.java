@@ -10,13 +10,11 @@ package be.community.Api_First_Enterprise.dto;
  * @param firstname le prénom de l'employé
  * @param service   le service de l'employé
  * @param floor     l'étage du service
- * @param address   l'addresse de l'employée
  */
-public record EmployeeResponseDTO(
+public record EmployeeWithoutAddressResponseDTO(
         String name,
         String firstname,
         String service,
-        Integer floor,
-        AddressDTO address
+        Integer floor
 ) {
 }

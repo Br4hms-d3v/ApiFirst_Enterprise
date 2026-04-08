@@ -1,14 +1,14 @@
 openapi: 3.0.3
 info:
-  title: Employee API to know the staff and in which work department
+  title: Employees work in this enterprise
   description: |-
-    A simple Enterprise API to allows two operations
-    - get a list of employees
+    A simple directory API that allows 2 operations :
+    - get list employees
     - create a new employee
-    - get an information about the employee
-    - edit an employee
+    - read an employee by id
+    - update an employee
     - delete an employee
-  version: 1.0- SNAPSHOT
+  version: 1.0-SNAPSHOT
 servers:
   - url: https://testenvironment.org/api/v1
   - url: https://prodenvironment.org/api/v1
@@ -21,18 +21,61 @@ paths:
     get:
       tags:
         - employee
-      summary: list of employees
-      description: Retrieve the list of all employees
+      summary: Get list
+      description: Get a list of all employees
       operationId: getEmployees
       responses:
         200:
-          description: List of employees
+          description: Success
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/EmployeesResponse'
+                $ref: '#/components/schemas/EmployeesResponse'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+
+  /employee/{id}:
+    get:
+      tags:
+        - employee
+      summary: Get an employee by ID
+      operationId: getEmployeeId
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeResponse'
+        400:
+          $ref: '#/components/responses/400'
+        500:
+          $ref: '#/components/responses/500'
+
+    delete:
+      tags:
+        - employee
+      summary: Delete an employee
+      operationId: deleteEmployeeById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        204:
+          description: Employee deleted successfully
         404:
           $ref: '#/components/responses/404'
         500:
@@ -42,11 +85,11 @@ paths:
     post:
       tags:
         - employee
-      summary: New employee
-      description: Create a new employee
+      summary: Add employee
+      description: Create an employee in the enterprise
       operationId: createEmployee
       requestBody:
-        description: name, firstname, service and floor
+        description: name, firstname and service
         required: true
         content:
           application/json:
@@ -59,57 +102,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EmployeeResponse'
-        404:
-          $ref: '#/components/responses/404'
+        400:
+          description: Invalid input
         405:
           $ref: '#/components/responses/405'
-        500:
-          $ref: '#/components/responses/500'
-
-  /employee/{id}:
-    get:
-      tags:
-        - employee
-      summary: Get employee by ID
-      description: Retrieve employee details by ID
-      operationId: getEmployeeById
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        200:
-          description: Employee found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EmployeeResponse'
-        404:
-          $ref: '#/components/responses/404'
-        500:
-          $ref: '#/components/responses/500'
-
-    delete:
-      tags:
-        - employee
-      summary: Delete employee
-      description: Delete employee
-      operationId: deleteEmployee
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        204:
-          $ref: '#/components/responses/204'
-        404:
-          $ref: '#/components/responses/404'
         500:
           $ref: '#/components/responses/500'
 
@@ -117,9 +113,8 @@ paths:
     put:
       tags:
         - employee
-      summary: Update employee
-      description: Update an existing employee
-      operationId: updateEmployee
+      summary: Update an employee
+      operationId: updateEmployeeId
       parameters:
         - name: id
           in: path
@@ -135,11 +130,11 @@ paths:
               $ref: '#/components/schemas/UpdateEmployeeRequest'
       responses:
         200:
-          description: Employee updated
+          description: Employee updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmployeeResponse'
+                $ref: '#/components/schemas/EmployeeWithoutAddressResponse'
         404:
           $ref: '#/components/responses/404'
         405:
@@ -148,14 +143,20 @@ paths:
           $ref: '#/components/responses/500'
 
 components:
+  ##  Schemas  ##
   schemas:
-    EmployeesResponse:
+    Employees:
       type: object
       properties:
         name:
           type: string
         firstname:
           type: string
+
+    EmployeesResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/Employees'
 
     EmployeeResponse:
       type: object
@@ -189,7 +190,6 @@ components:
       type: object
       required:
         - name
-        - firstname
       properties:
         name:
           type: string
@@ -227,27 +227,29 @@ components:
         city:
           type: string
 
+  ##  Responses  ##
   responses:
-    204:
-      description: Employee deleted successfully
-
+    400:
+      description: Bad Request
+      content:
+        application/problem+json:
+          schema:
+            $ref: "../resources/problem.yaml#/components/schemas/Problem"
     404:
       description: Object not found
       content:
         application/problem+json:
           schema:
-            $ref: '../resources/problem.yaml#/components/schemas/Problem'
-
+            $ref: "../resources/problem.yaml#/components/schemas/Problem"
     405:
       description: Invalid input
       content:
         application/problem+json:
           schema:
-            $ref: '../resources/problem.yaml#/components/schemas/Problem'
-
+            $ref: "../resources/problem.yaml#/components/schemas/InputValidationProblem"
     500:
-      description: Error Server
+      description: Unexpect Error
       content:
         application/problem+json:
           schema:
-            $ref: '../resources/problem.yaml#/components/schemas/Problem'
+            $ref: "../resources/problem.yaml#/components/schemas/Problem"

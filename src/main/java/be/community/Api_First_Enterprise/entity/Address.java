@@ -1,10 +1,10 @@
-package be.community.Api_First_Enterprise.entities;
+package be.community.Api_First_Enterprise.entity;
+
 
 import jakarta.persistence.*;
 
 @Entity
 public class Address {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
